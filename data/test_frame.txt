@@ -1,0 +1,25 @@
+@Material
+// id       A       E       I
+    0     100   10000     500
+
+@Node
+// id       x       y  x_fixed  y_fixed  r_fixed
+    0       0       0        1        1        0
+    1     100       0        0        0        0
+    2     200       0        0        1        0
+    3      50      50        0        0        0
+    4     150      50        0        0        0
+
+@Beam
+// id  first_node  second_node  material
+    0           0            1         0
+    1           1            2         0
+    2           0            3         0
+    3           3            1         0
+    4           1            4         0
+    5           4            2         0
+    6           3            4         0
+
+@Load
+// id  nodal  location  type  magnitude  lambda_x  lambda_y
+    0      0         3     0       1000         0        -1

@@ -1,8 +1,6 @@
 #ifndef __MATERIAL_H_
 #define __MATERIAL_H_
 
-#include <cstddef>
-
 
 class Material {
 private:

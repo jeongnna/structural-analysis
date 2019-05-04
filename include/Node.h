@@ -1,7 +1,6 @@
 #ifndef __STRUCTURES_H_
 #define __STRUCTURES_H_
 
-#include <cstddef>
 #include "Load.h"
 
 

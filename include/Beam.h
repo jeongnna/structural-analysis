@@ -1,7 +1,6 @@
 #ifndef __BEAM_H_
 #define __BEAM_H_
 
-#include <cstddef>
 #include <vector>
 #include "Matrix.h"
 #include "Material.h"

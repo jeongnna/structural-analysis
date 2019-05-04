@@ -1,7 +1,6 @@
 #ifndef __FRAME_H_
 #define __FRAME_H_
 
-#include <cstddef>
 #include <vector>
 #include "Matrix.h"
 #include "Load.h"

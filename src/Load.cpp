@@ -28,13 +28,3 @@ load_t& Load::get_type() {return m_type;}
 double& Load::get_magnitude() {return m_magnitude;}
 double& Load::get_lx() {return m_lx;}
 double& Load::get_ly() {return m_ly;}
-
-//void Load::copy_from(Load &object) {
-//    m_applied = object.get_applied();
-//    m_is_nodal = object.get_is_nodal();
-//    m_object = object.get_object();
-//    m_type = object.get_type();
-//    m_magnitude = object.get_magnitude();
-//    m_lx = object.get_lx();
-//    m_ly = object.get_applied();
-//}

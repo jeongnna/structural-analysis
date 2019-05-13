@@ -47,7 +47,7 @@ Matrix Frame::load_vector() {
     // load on beams
     for (int k = 0; k < m_num_beams; k++) {
         Beam &bm = m_beams[k];
-        Matrix loadvec = bm.global_load_vector();
+        Matrix loadvec = bm.global_load_substitute();
         int p1 = 3 * bm.get_node1().get_id();
         int p2 = 3 * bm.get_node2().get_id();
 
@@ -60,24 +60,14 @@ Matrix Frame::load_vector() {
     // load on nodes
     for (int k = 0; k < m_num_nodes; k++) {
         Node &nd = m_nodes[k];
-        Load &nodal_load = nd.get_load();
-        if (!nodal_load.get_applied())
-            continue;
-        load_t loadtype = nodal_load.get_type();
+        std::vector<Load> &loads = nd.get_load();
         int p = 3 * nd.get_id();
 
-        if (loadtype == concentrated) {
-            double &magnitude = nodal_load.get_magnitude();
-            double &lx = nodal_load.get_lx();
-            double &ly = nodal_load.get_ly();
-            loadvec_frame(p + 0, 0) += (magnitude * lx);
-            loadvec_frame(p + 1, 0) += (magnitude * ly);
-        }
-        else if (loadtype == distributed) {
-
-        }
-        else if (loadtype == moment) {
-            loadvec_frame(p + 2, 0) += nodal_load.get_magnitude();
+        for (int i = 0; i < loads.size(); i++) {
+            Load &load = loads[i];
+            loadvec_frame(p + 0, 0) += load.get_px();
+            loadvec_frame(p + 1, 0) += load.get_py();
+            loadvec_frame(p + 2, 0) += load.get_pr();
         }
     }
 

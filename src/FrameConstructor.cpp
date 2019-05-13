@@ -111,8 +111,8 @@ void FrameConstructor::read_beam_information(std::ifstream &infile) {
 
 void FrameConstructor::read_load_information(std::ifstream &infile) {
     std::string line;
-    int id, is_nodal, object_id, loadtype;
-    double magnitude, lx, ly;
+    int id, is_nodal, object_id;
+    double px, py, pr;
 
     while (getline(infile, line)) {
         if (line.empty())
@@ -121,15 +121,17 @@ void FrameConstructor::read_load_information(std::ifstream &infile) {
             continue;
         std::stringstream ss;
         ss.str(line);
-        ss >> id >> is_nodal >> object_id >> loadtype >> magnitude >> lx >> ly;
-        Load load(loadtype, magnitude, lx, ly);
+        ss >> id >> is_nodal >> object_id >> px >> py >> pr;
         if (is_nodal) {
+            Load load(px, py, pr);
             Node &node = find_node(object_id);
-            node.set_load(load);
+            node.add_load(load);
         }
         else {
+            // TODO: create beam load
+            Load load(px, py, pr);  // remove
             Beam &beam = find_beam(object_id);
-            beam.set_load(load);
+            beam.add_load(load);
         }
     }
 }

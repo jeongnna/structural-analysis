@@ -1,3 +1,4 @@
+#include <vector>
 #include "Load.h"
 #include "Node.h"
 
@@ -14,8 +15,8 @@ double& Node::get_y() {return m_y;}
 bool& Node::get_fx() {return m_fx;}
 bool& Node::get_fy() {return m_fy;}
 bool& Node::get_fr() {return m_fr;}
-Load& Node::get_load() {return m_load;}
+std::vector<Load>& Node::get_load() {return m_loads;}
 
-void Node::set_load(Load &load) {
-    m_load = load;
+void Node::add_load(Load &load) {
+    m_loads.push_back(load);
 }

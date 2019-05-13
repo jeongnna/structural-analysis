@@ -17,7 +17,7 @@ private:
     double m_length;
     double m_lx;
     double m_ly;
-    Load m_load;
+    std::vector<Load> m_loads;
 
 public:
     Beam(int id, Node &node1, Node &node2, Material &material);
@@ -30,13 +30,13 @@ public:
     double& get_lx();
     double& get_ly();
 
-    void set_load(Load &load);
+    void add_load(Load &load);
 
     Matrix rotation_matrix();
     Matrix local_stiffness_matrix();
     Matrix global_stiffness_matrix();
-    Matrix local_load_vector();
-    Matrix global_load_vector();
+    Matrix local_load_substitute();
+    Matrix global_load_substitute();
 };
 
 

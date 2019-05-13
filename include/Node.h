@@ -1,6 +1,7 @@
 #ifndef __STRUCTURES_H_
 #define __STRUCTURES_H_
 
+#include <vector>
 #include "Load.h"
 
 
@@ -12,7 +13,7 @@ private:
     bool m_fx;
     bool m_fy;
     bool m_fr;
-    Load m_load;
+    std::vector<Load> m_loads;
 
 public:
     Node(int id, double x, double y, bool fx, bool fy, bool fr);
@@ -23,9 +24,9 @@ public:
     bool& get_fx();
     bool& get_fy();
     bool& get_fr();
-    Load& get_load();
+    std::vector<Load>& get_load();
 
-    void set_load(Load &load);
+    void add_load(Load &load);
 };
 
 

@@ -1,29 +1,12 @@
 #include "Load.h"
 
 
-Load::Load() {
-    m_applied = false;
-}
-
-Load::Load(int type, double magnitude, double lx, double ly)
-: m_magnitude(magnitude), m_lx(lx), m_ly(ly)
+Load::Load(double px, double py, double pr)
+: m_px(px), m_py(py), m_pr(pr)
 {
-    m_applied = true;
-    switch (type) {
-        case 0:
-            m_type = concentrated;
-            break;
-        case 1:
-            m_type = distributed;
-            break;
-        case 2:
-            m_type = moment;
-            break;
-    }
+    // empty
 }
 
-bool& Load::get_applied() {return m_applied;}
-load_t& Load::get_type() {return m_type;}
-double& Load::get_magnitude() {return m_magnitude;}
-double& Load::get_lx() {return m_lx;}
-double& Load::get_ly() {return m_ly;}
+double& Load::get_px() {return m_px;}
+double& Load::get_py() {return m_py;}
+double& Load::get_pr() {return m_pr;}

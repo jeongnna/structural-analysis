@@ -30,8 +30,8 @@ double& Beam::get_length() {return m_length;}
 double& Beam::get_lx() {return m_lx;}
 double& Beam::get_ly() {return m_ly;}
 
-void Beam::set_load(Load &load) {
-    m_load = load;
+void Beam::add_load(Load &load) {
+    m_loads.push_back(load);
 }
 
 
@@ -74,17 +74,16 @@ Matrix Beam::global_stiffness_matrix() {
     return rot.dot(ke).dot(rot_t);
 }
 
-Matrix Beam::local_load_vector() {
-    // m_load 에 저장된 load 정보와 m_node.get_fix() 의 fix 정보로부터
-    // 6 x 1 Matrix 를 만들어야 함.
-    // [px1, py1, m1, px2, py2, m2] - [...]
-    // 집중하중과 분포하중 모두 포함
+Matrix Beam::local_load_substitute() {
     Matrix loadvec(6, 1, 0);
+    // m_loads 에 저장된 load 정보로부터
+    // nodal load substitution 6 x 1 Matrix 를 만들어야 함.
+    // [px1, py1, m1, px2, py2, m2]
     return loadvec;
 }
 
-Matrix Beam::global_load_vector() {
+Matrix Beam::global_load_substitute() {
     Matrix rot = rotation_matrix();
-    Matrix loadvec = local_load_vector();
+    Matrix loadvec = local_load_substitute();
     return rot.dot(loadvec);
 }

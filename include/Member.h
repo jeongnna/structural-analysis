@@ -1,5 +1,5 @@
-#ifndef __BEAM_H_
-#define __BEAM_H_
+#ifndef __MEMBER_H_
+#define __MEMBER_H_
 
 #include <vector>
 #include "Matrix.h"
@@ -8,7 +8,7 @@
 #include "Node.h"
 
 
-class Beam {
+class Member {
 private:
     int m_id;
     Node &m_node1;
@@ -17,10 +17,10 @@ private:
     double m_length;
     double m_lx;
     double m_ly;
-    std::vector<Load> m_loads;
+    std::vector<MemberLoad> m_loads;
 
 public:
-    Beam(int id, Node &node1, Node &node2, Material &material);
+    Member(int id, Node &node1, Node &node2, Material &material);
 
     int& get_id();
     Node& get_node1();
@@ -30,13 +30,13 @@ public:
     double& get_lx();
     double& get_ly();
 
-    void add_load(Load &load);
+    void add_load(MemberLoad &load);
 
     Matrix rotation_matrix();
     Matrix local_stiffness_matrix();
     Matrix global_stiffness_matrix();
-    Matrix local_load_substitute();
-    Matrix global_load_substitute();
+    Matrix local_fem();
+    Matrix global_fem();
 };
 
 

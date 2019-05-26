@@ -3,30 +3,31 @@
 #include "Matrix.h"
 #include "Load.h"
 #include "Node.h"
-#include "Beam.h"
+#include "Member.h"
 #include "Frame.h"
+#include "linearsolve.h"
 
 
-Frame::Frame(std::vector<Node> &nodes, std::vector<Beam> &beams)
-: m_nodes(nodes), m_beams(beams)
+Frame::Frame(std::vector<Node> &nodes, std::vector<Member> &members)
+: m_nodes(nodes), m_members(members)
 {
-    m_num_nodes = m_nodes.size();
-    m_num_beams = m_beams.size();
+    // empty
 }
 
 void Frame::print() {
-    std::cout << "Number of nodes: " << m_num_nodes << std::endl;
-    std::cout << "Number of beams: " << m_num_beams << std::endl;
+    std::cout << "Number of nodes: " << m_nodes.size() << std::endl;
+    std::cout << "Number of members: " << m_members.size() << std::endl;
 }
 
 Matrix Frame::stiffness_matrix() {
-    Matrix ke_frame(3 * m_num_nodes, 3 * m_num_nodes, 0);
+    int mat_size = 3 * m_nodes.size();
+    Matrix ke_frame(mat_size, mat_size, 0);
 
-    for (int k = 0; k < m_num_beams; k++) {
-        Beam &bm = m_beams[k];
-        Matrix ke = bm.global_stiffness_matrix();
-        int p1 = 3 * bm.get_node1().get_id();
-        int p2 = 3 * bm.get_node2().get_id();
+    for (int k = 0; k < m_members.size(); k++) {
+        Member &mb = m_members[k];
+        Matrix ke = mb.global_stiffness_matrix();
+        int p1 = 3 * mb.get_node1().get_id();
+        int p2 = 3 * mb.get_node2().get_id();
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -42,23 +43,23 @@ Matrix Frame::stiffness_matrix() {
 }
 
 Matrix Frame::load_vector() {
-    Matrix loadvec_frame(3 * m_num_nodes, 1, 0);
+    Matrix loadvec_frame(3 * m_nodes.size(), 1, 0);
 
-    // load on beams
-    for (int k = 0; k < m_num_beams; k++) {
-        Beam &bm = m_beams[k];
-        Matrix loadvec = bm.global_load_substitute();
-        int p1 = 3 * bm.get_node1().get_id();
-        int p2 = 3 * bm.get_node2().get_id();
+    // load on members
+    for (int k = 0; k < m_members.size(); k++) {
+        Member &mb = m_members[k];
+        Matrix mb_fem = mb.global_fem();
+        int p1 = 3 * mb.get_node1().get_id();
+        int p2 = 3 * mb.get_node2().get_id();
 
         for (int i = 0; i < 3; i++) {
-            loadvec_frame(p1 + i, 0) += loadvec(i, 0);
-            loadvec_frame(p2 + i, 0) += loadvec(3 + i, 0);
+            loadvec_frame(p1 + i, 0) -= mb_fem(i, 0);
+            loadvec_frame(p2 + i, 0) -= mb_fem(3 + i, 0);
         }
     }
 
     // load on nodes
-    for (int k = 0; k < m_num_nodes; k++) {
+    for (int k = 0; k < m_nodes.size(); k++) {
         Node &nd = m_nodes[k];
         std::vector<Load> &loads = nd.get_load();
         int p = 3 * nd.get_id();
@@ -72,4 +73,36 @@ Matrix Frame::load_vector() {
     }
 
     return loadvec_frame;
+}
+
+Matrix Frame::displacement() {
+    std::vector<int> free;
+    for (int k = 0; k < m_nodes.size(); k++) {
+        Node &nd = m_nodes[k];
+        int p = 3 * k;
+        if (!nd.get_fx())
+            free.push_back(p);
+        if (!nd.get_fy())
+            free.push_back(p + 1);
+        if (!nd.get_fr())
+            free.push_back(p + 2);
+    }
+
+    Matrix ke = stiffness_matrix();
+    Matrix loadvec = load_vector();
+    Matrix disp_tmp = solve(ke(free, free), loadvec(free, 0));
+
+    Matrix disp = Matrix(3 * m_nodes.size(), 1, 0);
+
+    for (int p = 0; p < 3 * m_nodes.size(); p++) {
+        int count = 0;
+        if (p == free[count])
+            disp(p, 0) = disp_tmp(count++, 0);
+        else
+            disp(p, 0) = 0;
+        if (count != free.size())
+            throw "Error";
+    }
+
+    return disp;
 }

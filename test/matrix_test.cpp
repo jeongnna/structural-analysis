@@ -8,8 +8,8 @@ int main(void) {
                                              {4.0, 5.0, 6.0},
                                              {7.0, 8.0, 9.0}};
     std::vector<double> vec = {1.0, 2.0, 3.0};
-    
-    //// Test constructors
+
+    // Test constructors
     cout << "Test constructors" << endl;
     // - initial value
     cout << "initial value" << endl;
@@ -26,7 +26,18 @@ int main(void) {
     Matrix b1(vec);
     b1.print();
     cout << endl;
-    
+
+    // Test accessing value
+    // access by scalar
+    cout << "A2[2, 0]" << endl;
+    cout << A2(2, 0) << endl;
+    // access by vector
+    vector<int> row_idx({1, 2});
+    vector<int> col_idx({0, 1});
+    cout << "A2[1:3, 0:2]" << endl;
+    A2(row_idx, col_idx).print();
+    cout << endl;
+
     // Test scalar operators
     cout << "Test scalar operators" << endl;
     cout << "+" << endl;
@@ -35,7 +46,7 @@ int main(void) {
     cout << "*" << endl;
     (A2 * 3).print();
     cout << endl;
-    
+
     // Test matrix operators
     cout << "Test matrix operators" << endl;
     // - transpose
@@ -53,10 +64,10 @@ int main(void) {
     cout << "dot with vector" << endl;
     A1.dot(b1).print();
     cout << endl;
-    
+
     // Revise values
     A2(0, 1) += A2(0, 2);
     A2.print();
-    
+
     return 0;
 }

@@ -10,7 +10,7 @@
     3      50      50        0        0        0
     4     150      50        0        0        0
 
-@Beam
+@Member
 // id  first_node  second_node  material
     0           0            1         0
     1           1            2         0
@@ -21,5 +21,9 @@
     6           3            4         0
 
 @Load
-// id  is_nodal  object     px     py     pr
-    0         0       3      0  -1000      0
+// id  object     px     py     pr
+    0       0      0      0      0
+
+@MemberLoad
+// id  object  loadtype  magnitude    a    b
+    0       3         0       1000    0    0

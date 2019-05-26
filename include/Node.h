@@ -1,5 +1,5 @@
-#ifndef __STRUCTURES_H_
-#define __STRUCTURES_H_
+#ifndef __NODE_H_
+#define __NODE_H_
 
 #include <vector>
 #include "Load.h"

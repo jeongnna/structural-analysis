@@ -17,4 +17,21 @@ public:
 };
 
 
+class MemberLoad {
+private:
+    int m_loadtype;
+    double m_magnitude;
+    double m_a;
+    double m_b;
+
+public:
+    MemberLoad(int loadtype, double magnitude, double a, double b);
+
+    int& get_loadtype();
+    double& get_magnitude();
+    double& get_a();
+    double& get_b();
+};
+
+
 #endif

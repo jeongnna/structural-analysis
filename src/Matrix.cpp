@@ -45,8 +45,35 @@ void Matrix::print() {
 }
 
 // Get value of given location
-double& Matrix::operator()(int row_id, int col_id) {
-    return m_matrix[row_id][col_id];
+double& Matrix::operator()(int row_idx, int col_idx) {
+    return m_matrix[row_idx][col_idx];
+}
+
+Matrix Matrix::operator()(std::vector<int> &row_idx, std::vector<int> &col_idx) {
+    int row_size = row_idx.size();
+    int col_size = col_idx.size();
+    Matrix res(row_size, col_size, 0);
+    for (int i = 0; i < row_size; i++) {
+        for (int j = 0; j < col_size; j++)
+            res(i, j) = m_matrix[row_idx[i]][col_idx[j]];
+    }
+    return res;
+}
+
+Matrix Matrix::operator()(std::vector<int> &row_idx, int col_idx) {
+    int row_size = row_idx.size();
+    Matrix res(row_size, 1, 0);
+    for (int i = 0; i < row_size; i++)
+        res(i, 0) = m_matrix[row_idx[i]][col_idx];
+    return res;
+}
+
+Matrix Matrix::operator()(int row_idx, std::vector<int> &col_idx) {
+    int col_size = col_idx.size();
+    Matrix res(1, col_size, 0);
+    for (int j = 0; j < col_size; j++)
+        res(j, 0) = m_matrix[row_idx][col_idx[j]];
+    return res;
 }
 
 // Get transposed matrix

@@ -5,7 +5,7 @@
 #include "Load.h"
 #include "Material.h"
 #include "Node.h"
-#include "Beam.h"
+#include "Member.h"
 #include "Frame.h"
 
 #endif

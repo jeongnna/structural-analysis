@@ -19,7 +19,10 @@ public:
     int& get_col_size();
 
     void print();
-    double& operator()(int row_id, int col_id);
+    double& operator()(int row_idx, int col_idx);
+    Matrix operator()(std::vector<int> &row_idx, std::vector<int> &col_idx);
+    Matrix operator()(std::vector<int> &row_idx, int col_idx);
+    Matrix operator()(int row_idx, std::vector<int> &col_idx);
 
     Matrix transpose();
 

@@ -12,23 +12,25 @@ private:
     std::string m_inputfile;
     std::vector<Material> m_materials;
     std::vector<Node> m_nodes;
-    std::vector<Beam> m_beams;
+    std::vector<Member> m_members;
 
     Material& find_material(int id);
     Node& find_node(int id);
-    Beam& find_beam(int id);
+    Member& find_member(int id);
 
-    void read_material_information(std::ifstream &infile);
-    void read_node_information(std::ifstream &infile);
-    void read_beam_information(std::ifstream &infile);
-    void read_load_information(std::ifstream &infile);
+    void read_material_info(std::ifstream &infile);
+    void read_node_info(std::ifstream &infile);
+    void read_member_info(std::ifstream &infile);
+    void read_load_info(std::ifstream &infile);
+    void read_memberload_info(std::ifstream &infile);
 
 public:
     FrameConstructor();
 
     void set_inputfile(std::string inputfile);
 
-    Frame construct();
+    //Frame construct();
+    Frame construct(std::string inputfile);
 };
 
 

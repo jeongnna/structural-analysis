@@ -1,11 +1,10 @@
-#ifndef __LOAD_H_
-#define __LOAD_H_
+#ifndef __LINEARSOLVE_H_
+#define __LINEARSOLVE_H_
 
 #include "Matrix.h"
 
 
 Matrix forward(Matrix &A, Matrix &b) {
-    // All diagonal elements of A are assumed to be 1.
     int &n = A.get_row_size();
     Matrix x(n, 1, 0);
 

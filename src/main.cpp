@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 #include "Matrix.h"
+#include "LinearSolver.h"
 #include "structure.h"
 #include "FrameConstructor.h"
-//#include "linearsolve.h"
 
 using namespace std;
 

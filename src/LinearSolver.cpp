@@ -1,10 +1,12 @@
-#ifndef __LINEARSOLVE_H_
-#define __LINEARSOLVE_H_
-
 #include "Matrix.h"
+#include "LinearSolver.h"
 
 
-Matrix forward(Matrix &A, Matrix &b) {
+LinearSolver::LinearSolver() {
+    // empty
+}
+
+Matrix LinearSolver::forward(Matrix &A, Matrix &b) {
     int &n = A.get_row_size();
     Matrix x(n, 1, 0);
 
@@ -17,7 +19,7 @@ Matrix forward(Matrix &A, Matrix &b) {
     return x;
 }
 
-Matrix backward(Matrix &A, Matrix &b) {
+Matrix LinearSolver::backward(Matrix &A, Matrix &b) {
     int &n = A.get_row_size();
     Matrix x(n, 1, 0);
 
@@ -30,7 +32,7 @@ Matrix backward(Matrix &A, Matrix &b) {
     return x;
 }
 
-void lu_decomposition(Matrix &A) {
+void LinearSolver::lu_decomposition(Matrix &A) {
     int &n = A.get_row_size();
 
     for (int k = 0; k < n - 1; k++) {
@@ -44,11 +46,8 @@ void lu_decomposition(Matrix &A) {
     }
 }
 
-Matrix solve(Matrix A, Matrix b) {
+Matrix LinearSolver::solve(Matrix A, Matrix b) {
     lu_decomposition(A);
     Matrix y = forward(A, b);
     return backward(A, y);
 }
-
-
-#endif

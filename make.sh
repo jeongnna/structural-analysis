@@ -3,6 +3,7 @@ c++ -std=c++14 \
 -I include \
 src/main.cpp \
 src/Matrix.cpp \
+src/LinearSolver.cpp \
 src/Material.cpp \
 src/Load.cpp \
 src/Node.cpp \

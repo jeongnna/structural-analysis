@@ -1,11 +1,11 @@
 #include <iostream>
 #include <vector>
 #include "Matrix.h"
+#include "LinearSolver.h"
 #include "Load.h"
 #include "Node.h"
 #include "Member.h"
 #include "Frame.h"
-#include "linearsolve.h"
 
 
 Frame::Frame(std::vector<Node> &nodes, std::vector<Member> &members)
@@ -88,12 +88,12 @@ Matrix Frame::displacement() {
             free.push_back(p + 2);
     }
 
+    LinearSolver linsolver;
     Matrix ke = stiffness_matrix();
     Matrix loadvec = load_vector();
-    Matrix disp_tmp = solve(ke(free, free), loadvec(free, 0));
+    Matrix disp_tmp = linsolver.solve(ke(free, free), loadvec(free, 0));
 
     Matrix disp = Matrix(3 * m_nodes.size(), 1, 0);
-
     for (int p = 0; p < 3 * m_nodes.size(); p++) {
         int count = 0;
         if (p == free[count])

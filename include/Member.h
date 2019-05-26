@@ -35,8 +35,9 @@ public:
     Matrix rotation_matrix();
     Matrix local_stiffness_matrix();
     Matrix global_stiffness_matrix();
-    Matrix local_fem();
-    Matrix global_fem();
+    Matrix local_fixed_end_moment();
+    Matrix global_fixed_end_moment();
+    Matrix reaction();
 };
 
 

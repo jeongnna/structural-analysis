@@ -3,6 +3,11 @@
 #include "Matrix.h"
 
 
+// Default constructor
+Matrix::Matrix() {
+    // empty
+}
+
 // Construct with initial value
 Matrix::Matrix(int row_size, int col_size, double init) {
     m_row_size = row_size;

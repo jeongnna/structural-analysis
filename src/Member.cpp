@@ -75,16 +75,24 @@ Matrix Member::global_stiffness_matrix() {
     return rot.dot(ke).dot(rot_t);
 }
 
-Matrix Member::local_fem() {
-    Matrix loadvec(6, 1, 0);
-    // m_loads 에 저장된 load 정보로부터
-    // nodal load substitution 6 x 1 Matrix 를 만들어야 함.
-    // [px1, py1, m1, px2, py2, m2]
-    return loadvec;
+Matrix Member::local_fixed_end_moment() {
+    Matrix fem(6, 1, 0);
+    // m_loads 에 저장된 MemberLoad 정보로부터
+    // fem (6 x 1 Matrix) 를 만들어야 함.
+    return fem;
 }
 
-Matrix Member::global_fem() {
+Matrix Member::global_fixed_end_moment() {
     Matrix rot = rotation_matrix();
-    Matrix loadvec = local_fem();
-    return rot.dot(loadvec);
+    Matrix fem = local_fem();
+    return rot.dot(fem);
+}
+
+Matrix Member::reaction() {
+    Matrix ke = local_stiffness_matrix();
+    // Matrix disp = ... (6 x 1 Matrix)
+    // node1, node2에서 displacement 값 가져오고 local 좌표계로 rotation
+    Matrix fem = local_fixed_end_moment();
+    Matrix reaction = ke.dot(disp) + fem;
+    return reaction;
 }

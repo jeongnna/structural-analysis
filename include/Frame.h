@@ -19,8 +19,9 @@ public:
     void print();
 
     Matrix stiffness_matrix();
-    Matrix load_vector();
-    Matrix displacement();
+    Matrix nodal_load_vector();
+    Matrix fixed_end_moment();
+    void compute_displacement();
 };
 
 

@@ -11,6 +11,7 @@ private:
     std::vector<std::vector<double> > m_matrix;
 
 public:
+    Matrix();
     Matrix(int row_size, int col_size, double init);
     Matrix(std::vector<std::vector<double> > mat);
     Matrix(std::vector<double> vec);

@@ -22,8 +22,8 @@
 
 @Load
 // id  object     px     py     pr
-    0       0      0      0      0
+    0       3      0   -100      0
+    1       4      0   -100      0
 
 @MemberLoad
 // id  object  loadtype  magnitude    a    b
-    0       3         0       1000    0    0

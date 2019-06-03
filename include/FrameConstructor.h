@@ -9,10 +9,11 @@
 
 class FrameConstructor {
 private:
-    std::string m_inputfile;
     std::vector<Material> m_materials;
     std::vector<Node> m_nodes;
     std::vector<Member> m_members;
+
+    Frame& m_frame;
 
     Material& find_material(int id);
     Node& find_node(int id);
@@ -27,9 +28,6 @@ private:
 public:
     FrameConstructor();
 
-    void set_inputfile(std::string inputfile);
-
-    //Frame construct();
     Frame construct(std::string inputfile);
 };
 

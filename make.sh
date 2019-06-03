@@ -4,10 +4,9 @@ c++ -std=c++14 \
 src/main.cpp \
 src/Matrix.cpp \
 src/LinearSolver.cpp \
-src/Material.cpp \
 src/Load.cpp \
+src/Material.cpp \
 src/Node.cpp \
-src/Member.cpp \
+src/Element.cpp \
 src/Frame.cpp \
-src/FrameConstructor.cpp \
 -o main

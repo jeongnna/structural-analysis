@@ -1,5 +1,5 @@
-#ifndef __MEMBER_H_
-#define __MEMBER_H_
+#ifndef __ELEMENT_H_
+#define __ELEMENT_H_
 
 #include <vector>
 #include "Matrix.h"
@@ -8,7 +8,7 @@
 #include "Node.h"
 
 
-class Member {
+class Element {
 private:
     int m_id;
     Node &m_node1;
@@ -17,10 +17,10 @@ private:
     double m_length;
     double m_lx;
     double m_ly;
-    std::vector<MemberLoad> m_loads;
+    std::vector<ElementLoad> m_loads;
 
 public:
-    Member(int id, Node &node1, Node &node2, Material &material);
+    Element(int id, Node &node1, Node &node2, Material &material);
 
     int& get_id();
     Node& get_node1();
@@ -29,8 +29,11 @@ public:
     double& get_length();
     double& get_lx();
     double& get_ly();
+    std::vector<ElementLoad>& get_loads();
 
-    void add_load(MemberLoad &load);
+    void print();
+
+    void add_load(ElementLoad &load);
 
     Matrix rotation_matrix();
     Matrix local_stiffness_matrix();

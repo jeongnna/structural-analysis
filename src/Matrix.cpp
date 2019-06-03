@@ -12,13 +12,15 @@ Matrix::Matrix() {
 Matrix::Matrix(int row_size, int col_size, double init) {
     m_row_size = row_size;
     m_col_size = col_size;
-    m_matrix.resize(m_row_size);
+    m_data.resize(m_row_size);
     for (int i = 0; i < m_row_size; i++)
-        m_matrix[i].resize(m_col_size, init);
+        m_data[i].resize(m_col_size, init);
 }
 
 // Construct with 2d-vector
-Matrix::Matrix(std::vector<std::vector<double> > mat) : m_matrix(mat) {
+Matrix::Matrix(std::vector<std::vector<double> > mat)
+: m_data(mat)
+{
     m_row_size = mat.size();
     m_col_size = mat[0].size();
     for (int i = 1; i < m_row_size; i++) {
@@ -31,9 +33,9 @@ Matrix::Matrix(std::vector<std::vector<double> > mat) : m_matrix(mat) {
 Matrix::Matrix(std::vector<double> vec) {
     m_row_size = vec.size();
     m_col_size = 1;
-    m_matrix.resize(m_row_size);
+    m_data.resize(m_row_size);
     for (int i = 0; i < m_row_size; i++)
-        m_matrix[i].resize(m_col_size, vec[i]);
+        m_data[i].resize(m_col_size, vec[i]);
 }
 
 int& Matrix::get_row_size() {return m_row_size;}
@@ -44,40 +46,40 @@ int& Matrix::get_col_size() {return m_col_size;}
 void Matrix::print() {
     for (int i = 0; i < m_row_size; i++) {
         for (int j = 0; j < m_col_size; j++)
-            std::cout << m_matrix[i][j] << " ";
+            std::cout << m_data[i][j] << " ";
         std::cout << std::endl;
     }
 }
 
 // Get value of given location
-double& Matrix::operator()(int row_idx, int col_idx) {
-    return m_matrix[row_idx][col_idx];
+double& Matrix::operator ()(int row_idx, int col_idx) {
+    return m_data[row_idx][col_idx];
 }
 
-Matrix Matrix::operator()(std::vector<int> &row_idx, std::vector<int> &col_idx) {
+Matrix Matrix::operator ()(std::vector<int> &row_idx, std::vector<int> &col_idx) {
     int row_size = row_idx.size();
     int col_size = col_idx.size();
     Matrix res(row_size, col_size, 0);
     for (int i = 0; i < row_size; i++) {
         for (int j = 0; j < col_size; j++)
-            res(i, j) = m_matrix[row_idx[i]][col_idx[j]];
+            res(i, j) = m_data[row_idx[i]][col_idx[j]];
     }
     return res;
 }
 
-Matrix Matrix::operator()(std::vector<int> &row_idx, int col_idx) {
+Matrix Matrix::operator ()(std::vector<int> &row_idx, int col_idx) {
     int row_size = row_idx.size();
     Matrix res(row_size, 1, 0);
     for (int i = 0; i < row_size; i++)
-        res(i, 0) = m_matrix[row_idx[i]][col_idx];
+        res(i, 0) = m_data[row_idx[i]][col_idx];
     return res;
 }
 
-Matrix Matrix::operator()(int row_idx, std::vector<int> &col_idx) {
+Matrix Matrix::operator ()(int row_idx, std::vector<int> &col_idx) {
     int col_size = col_idx.size();
     Matrix res(1, col_size, 0);
     for (int j = 0; j < col_size; j++)
-        res(j, 0) = m_matrix[row_idx][col_idx[j]];
+        res(j, 0) = m_data[row_idx][col_idx[j]];
     return res;
 }
 
@@ -86,71 +88,71 @@ Matrix Matrix::transpose() {
     Matrix res(m_col_size, m_row_size, 0.0);
     for (int i = 0; i < m_col_size; i++) {
         for (int j = 0; j < m_row_size; j++)
-            res(i, j) = m_matrix[j][i];
+            res(i, j) = m_data[j][i];
     }
     return res;
 }
 
 // Scalar operator +
-Matrix Matrix::operator+(double scalar) {
-    Matrix res(m_row_size, m_col_size, 0.0);
+Matrix Matrix::operator +(double scalar) {
+    Matrix res(m_data);
     int i, j;
     for (i = 0; i < m_row_size; i++) {
         for (j = 0; j < m_col_size; j++)
-            res(i, j) = m_matrix[i][j] + scalar;
+            res(i, j) += scalar;
     }
     return res;
 }
 
 // Scalar operator -
-Matrix Matrix::operator-(double scalar) {
-    Matrix res(m_row_size, m_col_size, 0.0);
+Matrix Matrix::operator -(double scalar) {
+    Matrix res(m_data);
     int i, j;
     for (i = 0; i < m_row_size; i++) {
         for (j = 0; j < m_col_size; j++)
-            res(i, j) = m_matrix[i][j] - scalar;
+            res(i, j) -= scalar;
     }
     return res;
 }
 
 // Scalar operator *
-Matrix Matrix::operator*(double scalar) {
-    Matrix res(m_row_size, m_col_size, 0.0);
+Matrix Matrix::operator *(double scalar) {
+    Matrix res(m_data);
     int i, j;
     for (i = 0; i < m_row_size; i++) {
         for (j = 0; j < m_col_size; j++)
-            res(i, j) = m_matrix[i][j] * scalar;
+            res(i, j) *= scalar;
     }
     return res;
 }
 
 // Scalar operator /
-Matrix Matrix::operator/(double scalar) {
-    Matrix res(m_row_size, m_col_size, 0.0);
+Matrix Matrix::operator /(double scalar) {
+    Matrix res(m_data);
     int i, j;
     for (i = 0; i < m_row_size; i++) {
         for (j = 0; j < m_col_size; j++)
-            res(i, j) = m_matrix[i][j] / scalar;
+            res(i, j) /= scalar;
     }
     return res;
 }
 
 // Matrix operator +
-Matrix Matrix::operator+(Matrix &B) {
-    Matrix res(m_col_size, m_row_size, 0.0);
+Matrix Matrix::operator +(Matrix &B) {
+    Matrix res(m_data);
     for (int i = 0; i < m_row_size; i++) {
         for (int j = 0; j < m_col_size; j++)
-            res(i, j) = m_matrix[i][j] + B(i, j);
+            res(i, j) += B(i, j);
     }
     return res;
 }
 
 // Matrix operator -
-Matrix Matrix::operator-(Matrix &B) {
-    Matrix res(m_col_size, m_row_size, 0.0);
+Matrix Matrix::operator -(Matrix &B) {
+    Matrix res(m_data);
     for (int i = 0; i < m_row_size; i++) {
         for (int j = 0; j < m_col_size; j++)
-            res(i, j) = m_matrix[i][j] - B(i, j);
+            res(i, j) -= B(i, j);
     }
     return res;
 }
@@ -163,7 +165,7 @@ Matrix Matrix::dot(Matrix &B) {
             for (int j = 0; j < B.get_col_size(); j++) {
                 double &product = res(i, j);
                 for (int k = 0; k < m_col_size; k++)
-                    product += m_matrix[i][k] * B(k, j);
+                    product += m_data[i][k] * B(k, j);
             }
         }
     }

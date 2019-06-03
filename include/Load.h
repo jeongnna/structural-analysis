@@ -2,31 +2,35 @@
 #define __LOAD_H_
 
 
-class Load {
+class NodeLoad {
 private:
+    int m_id;
     double m_px;
     double m_py;
     double m_pr;
 
 public:
-    Load(double m_px, double m_py, double m_pr);
+    NodeLoad(int id, double px, double py, double pr);
 
+    int& get_id();
     double& get_px();
     double& get_py();
     double& get_pr();
 };
 
 
-class MemberLoad {
+class ElementLoad {
 private:
+    int m_id;
     int m_loadtype;
     double m_magnitude;
     double m_a;
     double m_b;
 
 public:
-    MemberLoad(int loadtype, double magnitude, double a, double b);
+    ElementLoad(int id, int loadtype, double magnitude, double a, double b);
 
+    int& get_id();
     int& get_loadtype();
     double& get_magnitude();
     double& get_a();

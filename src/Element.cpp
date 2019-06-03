@@ -1,13 +1,14 @@
+#include <iostream>
 #include <vector>
 #include <cmath>
 #include "Matrix.h"
 #include "Material.h"
 #include "Load.h"
 #include "Node.h"
-#include "Member.h"
+#include "Element.h"
 
 
-Member::Member(int id, Node &node1, Node &node2, Material &material)
+Element::Element(int id, Node &node1, Node &node2, Material &material)
 : m_id(id), m_node1(node1), m_node2(node2), m_material(material)
 {
     double &x1 = m_node1.get_x();
@@ -22,20 +23,36 @@ Member::Member(int id, Node &node1, Node &node2, Material &material)
 }
 
 
-int& Member::get_id() {return m_id;}
-Node& Member::get_node1() {return m_node1;}
-Node& Member::get_node2() {return m_node2;}
-Material& Member::get_material() {return m_material;}
-double& Member::get_length() {return m_length;}
-double& Member::get_lx() {return m_lx;}
-double& Member::get_ly() {return m_ly;}
+int& Element::get_id() {return m_id;}
+Node& Element::get_node1() {return m_node1;}
+Node& Element::get_node2() {return m_node2;}
+Material& Element::get_material() {return m_material;}
+double& Element::get_length() {return m_length;}
+double& Element::get_lx() {return m_lx;}
+double& Element::get_ly() {return m_ly;}
+std::vector<ElementLoad>& Element::get_loads() {return m_loads;}
 
-void Member::add_load(MemberLoad &load) {
+void Element::print() {
+    std::cout << "{" << std::endl;
+    std::cout << "    Element ID: " << m_id << std::endl;
+    std::cout << "    Nodes: [" << m_node1.get_id() << ", " << m_node2.get_id() << "]" << std::endl;
+    std::cout << "    Material: " << m_material.get_id() << std::endl;
+    std::cout << "    Loads: [";
+    for (int l = 0; l < m_loads.size(); l++) {
+        std::cout << m_loads[l].get_id();
+        if (l < m_loads.size() - 1)
+            std::cout << ", ";
+    }
+    std::cout << "]" << std::endl;
+    std::cout << "}" << std::endl;
+}
+
+void Element::add_load(ElementLoad &load) {
     m_loads.push_back(load);
 }
 
 
-Matrix Member::rotation_matrix() {
+Matrix Element::rotation_matrix() {
     std::vector<std::vector<double> > rot =
         {{m_lx, -m_ly,   0.0,     0.0,     0.0,   0.0},
          {m_ly,  m_lx,   0.0,     0.0,     0.0,   0.0},
@@ -46,7 +63,7 @@ Matrix Member::rotation_matrix() {
     return Matrix(rot);
 }
 
-Matrix Member::local_stiffness_matrix() {
+Matrix Element::local_stiffness_matrix() {
     double &A = m_material.get_A();
     double &E = m_material.get_E();
     double &I = m_material.get_I();
@@ -68,29 +85,30 @@ Matrix Member::local_stiffness_matrix() {
     return Matrix(ke);
 }
 
-Matrix Member::global_stiffness_matrix() {
+Matrix Element::global_stiffness_matrix() {
     Matrix rot = rotation_matrix();
     Matrix rot_t = rot.transpose();
     Matrix ke = local_stiffness_matrix();
     return rot.dot(ke).dot(rot_t);
 }
 
-Matrix Member::local_fixed_end_moment() {
+Matrix Element::local_fixed_end_moment() {
     Matrix fem(6, 1, 0);
-    // m_loads 에 저장된 MemberLoad 정보로부터
+    // m_loads 에 저장된 ElementLoad 정보로부터
     // fem (6 x 1 Matrix) 를 만들어야 함.
     return fem;
 }
 
-Matrix Member::global_fixed_end_moment() {
+Matrix Element::global_fixed_end_moment() {
     Matrix rot = rotation_matrix();
-    Matrix fem = local_fem();
+    Matrix fem = local_fixed_end_moment();
     return rot.dot(fem);
 }
 
-Matrix Member::reaction() {
+Matrix Element::reaction() {
     Matrix ke = local_stiffness_matrix();
     // Matrix disp = ... (6 x 1 Matrix)
+    Matrix disp(6, 1, 0);
     // node1, node2에서 displacement 값 가져오고 local 좌표계로 rotation
     Matrix fem = local_fixed_end_moment();
     Matrix reaction = ke.dot(disp) + fem;

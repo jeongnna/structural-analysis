@@ -1,29 +1,29 @@
 @Material
 // id       A       E       I
-    0     100   10000     500
+    1     100   10000     500
 
 @Node
 // id       x       y  x_fixed  y_fixed  r_fixed
-    0       0       0        1        1        0
-    1     100       0        0        0        0
-    2     200       0        0        1        0
-    3      50      50        0        0        0
-    4     150      50        0        0        0
+    1       0       0        1        1        0
+    2     100       0        0        0        0
+    3     200       0        0        1        0
+    4      50      50        0        0        0
+    5     150      50        0        0        0
 
-@Member
+@Element
 // id  first_node  second_node  material
-    0           0            1         0
-    1           1            2         0
-    2           0            3         0
-    3           3            1         0
-    4           1            4         0
-    5           4            2         0
-    6           3            4         0
+    1           1            2         1
+    2           2            3         1
+    3           1            4         1
+    4           4            2         1
+    5           2            5         1
+    6           5            3         1
+    7           4            5         1
 
-@Load
+@NodeLoad
 // id  object     px     py     pr
-    0       3      0   -100      0
     1       4      0   -100      0
+    2       5      0   -100      0
 
-@MemberLoad
+@ElementLoad
 // id  object  loadtype  magnitude    a    b

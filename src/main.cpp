@@ -1,20 +1,13 @@
 #include <iostream>
 #include <string>
-#include "Matrix.h"
-#include "LinearSolver.h"
 #include "structure.h"
-#include "FrameConstructor.h"
 
 using namespace std;
 
 
 int main() {
-    FrameConstructor fc;
-    Frame frame = fc.construct("data/test_frame.txt");
-    cout << endl;
-
-    frame.print();
-    cout << endl;
+    Frame frame;
+    frame.construct("data/test_frame.txt");
 
     cout << "<Stiffness matrix>" << endl;
     Matrix ke = frame.stiffness_matrix();
@@ -22,9 +15,12 @@ int main() {
     cout << endl;
 
     cout << "<Load vector>" << endl;
-    Matrix loadvec = frame.load_vector();
+    Matrix loadvec = frame.nodal_load_vector();
     loadvec.print();
     cout << endl;
+
+    frame.compute_displacement();
+    frame.print();
 
     return 0;
 }

@@ -27,7 +27,7 @@ public:
     void print();
 
     void add_load(NodeLoad &load);
-    void set_displacement(double &dx, double &dy, double &dr);
+    void set_displacement(double dx, double dy, double dr);
 };
 
 

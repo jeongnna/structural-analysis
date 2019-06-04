@@ -75,21 +75,21 @@ Matrix Element::local_stiffness_matrix() {
     double _4EIL_ = 4 * E * I / L;
     double _2EIL_ = 2 * E * I / L;
 
-    std::vector<std::vector<double> > ke =
+    std::vector<std::vector<double> > kmat =
         {{  _AEL_,          0,         0,    -_AEL_,          0,         0},
          {      0,   _12EIL3_,   _6EIL2_,         0,  -_12EIL3_,   _6EIL2_},
          {      0,    _6EIL2_,    _4EIL_,         0,   -_6EIL2_,    _2EIL_},
          { -_AEL_,          0,         0,     _AEL_,          0,         0},
          {      0,  -_12EIL3_,  -_6EIL2_,         0,   _12EIL3_,  -_6EIL2_},
          {      0,    _6EIL2_,    _2EIL_,         0,   -_6EIL2_,    _4EIL_}};
-    return Matrix(ke);
+    return Matrix(kmat);
 }
 
 Matrix Element::global_stiffness_matrix() {
     Matrix rot = rotation_matrix();
     Matrix rot_t = rot.transpose();
-    Matrix ke = local_stiffness_matrix();
-    return rot.dot(ke).dot(rot_t);
+    Matrix kmat = local_stiffness_matrix();
+    return rot.dot(kmat).dot(rot_t);
 }
 
 Matrix Element::local_fixed_end_moment() {
@@ -106,11 +106,16 @@ Matrix Element::global_fixed_end_moment() {
 }
 
 Matrix Element::reaction() {
-    Matrix ke = local_stiffness_matrix();
-    // Matrix disp = ... (6 x 1 Matrix)
+    std::vector<double> &node1_disp = m_node1.get_displacement();
+    std::vector<double> &node2_disp = m_node2.get_displacement();
     Matrix disp(6, 1, 0);
-    // node1, node2에서 displacement 값 가져오고 local 좌표계로 rotation
+    for (int i = 0; i < 3; i++) {
+        disp(0 + i, 0) = node1_disp[i];
+        disp(3 + i, 0) = node2_disp[i];
+    }
+
+    Matrix kmat = local_stiffness_matrix();
+    Matrix rot_t = rotation_matrix().transpose();
     Matrix fem = local_fixed_end_moment();
-    Matrix reaction = ke.dot(disp) + fem;
-    return reaction;
+    return kmat.dot(rot_t).dot(disp) + fem;
 }

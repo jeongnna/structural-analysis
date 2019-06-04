@@ -46,7 +46,7 @@ void Node::add_load(NodeLoad &load) {
     m_loads.push_back(load);
 }
 
-void Node::set_displacement(double &dx, double &dy, double &dr) {
+void Node::set_displacement(double dx, double dy, double dr) {
     m_displacement[0] = dx;
     m_displacement[1] = dy;
     m_displacement[2] = dr;

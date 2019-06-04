@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "Matrix.h"
-#include "linearsolve.h"
+#include "LinearSolver.h"
 
 using namespace std;
 
@@ -17,7 +17,7 @@ int main() {
                                         {14.0}};
     Matrix b(b_values);
 
-    Matrix x = solve(A, b);
+    Matrix x = LinearSolver::solve(A, b);
     x.print();  // Expected value: [2, 1, 3]
 
     return 0;

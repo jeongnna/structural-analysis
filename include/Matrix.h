@@ -18,8 +18,11 @@ public:
 
     int& get_row_size();
     int& get_col_size();
+    std::vector<std::vector<double> >& get_data();
+    std::vector<double> to_1dvector();
 
     void print();
+
     double& operator()(int row_idx, int col_idx);
     Matrix operator()(std::vector<int> &row_idx, std::vector<int> &col_idx);
     Matrix operator()(std::vector<int> &row_idx, int col_idx);

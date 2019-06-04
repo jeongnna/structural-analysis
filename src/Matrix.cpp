@@ -40,6 +40,16 @@ Matrix::Matrix(std::vector<double> vec) {
 
 int& Matrix::get_row_size() {return m_row_size;}
 int& Matrix::get_col_size() {return m_col_size;}
+std::vector<std::vector<double> >& Matrix::get_data() {return m_data;}
+
+std::vector<double> Matrix::to_1dvector() {
+    if (m_data[0].size() != 1)
+        throw "Error: Matrix with more than one column can't be converted to 1d vector.";
+    std::vector<double> vec(m_row_size);
+    for (int i = 0; i < m_row_size; i++)
+        vec[i] = m_data[i][0];
+    return vec;
+}
 
 // Print elements
 // TODO: 자릿수 맞춰서 출력

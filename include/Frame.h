@@ -17,15 +17,6 @@ private:
     std::vector<Node> m_nodes;
     std::vector<Element> m_elements;
 
-    Material& find_material(int id);
-    Node& find_node(int id);
-    Element& find_element(int id);
-    void read_material_info(std::ifstream &infile);
-    void read_node_info(std::ifstream &infile);
-    void read_element_info(std::ifstream &infile);
-    void read_load_info(std::ifstream &infile);
-    void read_elementload_info(std::ifstream &infile);
-
 public:
     Frame();
 
@@ -34,13 +25,27 @@ public:
     std::vector<Element>& get_elements();
 
     void print();
-    void construct(std::string inputfile);
 
     Matrix stiffness_matrix();
     Matrix nodal_load_vector();
     Matrix fixed_end_moment();
     void compute_displacement();
+    void compute_reaction();
 };
+
+
+namespace FrameUtil {
+    Material& find_material(int id, Frame& frame);
+    Node& find_node(int id, Frame& frame);
+    Element& find_element(int id, Frame& frame);
+
+    void read_material_info(std::ifstream &infile, Frame& frame);
+    void read_node_info(std::ifstream &infile, Frame& frame);
+    void read_element_info(std::ifstream &infile, Frame& frame);
+    void read_nodeload_info(std::ifstream &infile, Frame& frame);
+    void read_elementload_info(std::ifstream &infile, Frame& frame);
+    Frame construct(std::string inputfile);
+}
 
 
 #endif

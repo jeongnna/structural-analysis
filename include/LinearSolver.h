@@ -6,14 +6,14 @@
 
 class LinearSolver {
 private:
-    Matrix forward(Matrix &A, Matrix &b);
-    Matrix backward(Matrix &A, Matrix &b);
+    static Matrix forward(Matrix &A, Matrix &b);
+    static Matrix backward(Matrix &A, Matrix &b);
 
 public:
     LinearSolver();
 
-    void lu_decomposition(Matrix &A);
-    Matrix solve(Matrix A, Matrix b);
+    static void lu_decomposition(Matrix &A);
+    static Matrix solve(Matrix A, Matrix b);
 };
 
 

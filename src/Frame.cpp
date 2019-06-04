@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>  // std::setw (when writing json file)
-#include "../nlohmann/json.hpp"
+#include "../lib/json.hpp"
 #include "Matrix.h"
 #include "LinearSolver.h"
 #include "Load.h"

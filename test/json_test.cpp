@@ -1,7 +1,7 @@
 #include <vector>
 #include <fstream>
 #include <iomanip>  // std::setw
-#include "../nlohmann/json.hpp"
+#include "../lib/json.hpp"
 
 using json = nlohmann::json;
 

@@ -30,7 +30,7 @@ public:
     Matrix nodal_load_vector();
     Matrix fixed_end_moment();
     void compute_displacement();
-    void compute_reaction();
+    void compute_reaction(std::string filename);
 };
 
 

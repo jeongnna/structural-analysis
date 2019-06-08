@@ -30,12 +30,13 @@ int main(void) {
     // Test accessing value
     // access by scalar
     cout << "A2[2, 0]" << endl;
-    cout << A2(2, 0) << endl;
+    //cout << A2(2, 0) << endl;
+    cout << A2[2][0] << endl;
     // access by vector
     vector<int> row_idx({1, 2});
     vector<int> col_idx({0, 1});
     cout << "A2[1:3, 0:2]" << endl;
-    A2(row_idx, col_idx).print();
+    A2.get(row_idx, col_idx).print();
     cout << endl;
 
     // Test scalar operators
@@ -66,7 +67,7 @@ int main(void) {
     cout << endl;
 
     // Revise values
-    A2(0, 1) += A2(0, 2);
+    A2[0][1] += A2[0][2];
     A2.print();
 
     return 0;

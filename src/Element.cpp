@@ -110,8 +110,8 @@ Matrix Element::reaction() {
     std::vector<double> &node2_disp = m_node2.get_displacement();
     Matrix disp(6, 1, 0);
     for (int i = 0; i < 3; i++) {
-        disp(0 + i, 0) = node1_disp[i];
-        disp(3 + i, 0) = node2_disp[i];
+        disp[0 + i][0] = node1_disp[i];
+        disp[3 + i][0] = node2_disp[i];
     }
 
     Matrix kmat = local_stiffness_matrix();

@@ -48,7 +48,7 @@ void Frame::print() {
 
 Matrix Frame::stiffness_matrix() {
     int mat_size = 3 * m_nodes.size();
-    Matrix kmat_frame(mat_size, mat_size, 0);
+    Matrix kmat_frame(mat_size, mat_size, 0.0);
 
     for (int k = 0; k < m_elements.size(); k++) {
         Element &elm = m_elements[k];
@@ -58,10 +58,10 @@ Matrix Frame::stiffness_matrix() {
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                kmat_frame(p1 + i, p1 + j) += kmat(i, j);
-                kmat_frame(p1 + i, p2 + j) += kmat(i, 3 + j);
-                kmat_frame(p2 + i, p1 + j) += kmat(3 + i, j);
-                kmat_frame(p2 + i, p2 + j) += kmat(3 + i, 3 + j);
+                kmat_frame[p1 + i][p1 + j] += kmat[i][j];
+                kmat_frame[p1 + i][p2 + j] += kmat[i][3 + j];
+                kmat_frame[p2 + i][p1 + j] += kmat[3 + i][j];
+                kmat_frame[p2 + i][p2 + j] += kmat[3 + i][3 + j];
             }
         }
     }
@@ -70,7 +70,7 @@ Matrix Frame::stiffness_matrix() {
 }
 
 Matrix Frame::nodal_load_vector() {
-    Matrix loadvec(3 * m_nodes.size(), 1, 0);
+    Matrix loadvec(3 * m_nodes.size(), 1, 0.0);
 
     for (int k = 0; k < m_nodes.size(); k++) {
         Node &nde = m_nodes[k];
@@ -78,9 +78,9 @@ Matrix Frame::nodal_load_vector() {
 
         for (int i = 0; i < loads.size(); i++) {
             NodeLoad &ndld = loads[i];
-            loadvec(3 * k + 0, 0) += ndld.get_px();
-            loadvec(3 * k + 1, 0) += ndld.get_py();
-            loadvec(3 * k + 2, 0) += ndld.get_pr();
+            loadvec[3 * k + 0][0] += ndld.get_px();
+            loadvec[3 * k + 1][0] += ndld.get_py();
+            loadvec[3 * k + 2][0] += ndld.get_pr();
         }
     }
 
@@ -88,7 +88,7 @@ Matrix Frame::nodal_load_vector() {
 }
 
 Matrix Frame::fixed_end_moment() {
-    Matrix fem(3 * m_nodes.size(), 1, 0);
+    Matrix fem(3 * m_nodes.size(), 1, 0.0);
 
     for (int k = 0; k < m_elements.size(); k++) {
         Element &elm = m_elements[k];
@@ -97,8 +97,8 @@ Matrix Frame::fixed_end_moment() {
         int p2 = 3 * elm.get_node2().get_index();
 
         for (int i = 0; i < 3; i++) {
-            fem(p1 + i, 0) += elm_fem(i, 0);
-            fem(p2 + i, 0) += elm_fem(3 + i, 0);
+            fem[p1 + i][0] += elm_fem[i][0];
+            fem[p2 + i][0] += elm_fem[3 + i][0];
         }
     }
 
@@ -108,8 +108,7 @@ Matrix Frame::fixed_end_moment() {
 void Frame::compute_displacement() {
     std::vector<int> free_idx;
     for (int k = 0; k < m_nodes.size(); k++) {
-        Node &nde = m_nodes[k];
-        std::vector<bool> fixed = nde.get_fixed();
+        std::vector<bool> fixed = m_nodes[k].get_fixed();
 
         if (!fixed[0])  // x
             free_idx.push_back(3 * k);
@@ -119,30 +118,29 @@ void Frame::compute_displacement() {
             free_idx.push_back(3 * k + 2);
     }
 
-    Matrix kmat = stiffness_matrix()(free_idx, free_idx);
-    Matrix loadvec = nodal_load_vector()(free_idx, 0);
-    Matrix fem = fixed_end_moment()(free_idx, 0);
+    Matrix kmat = stiffness_matrix().get(free_idx, free_idx);
+    Matrix loadvec = nodal_load_vector().get(free_idx, 0);
+    Matrix fem = fixed_end_moment().get(free_idx, 0);
     Matrix disp_tmp = LinearSolver::solve(kmat, loadvec - fem);
 
     std::vector<double> disp;
     for (int k = 0; k < m_nodes.size(); k++) {
         static int f = 0;
-        Node &nde = m_nodes[k];
         int p = 3 * k;
         disp.assign(3, 0);
 
         for (int i = 0; i < 3; i++) {
             if (p + i == free_idx[f])
-                disp[i] = disp_tmp(f++, 0);
+                disp[i] = disp_tmp[f++][0];
         }
 
-        nde.set_displacement(disp[0], disp[1], disp[2]);
+        m_nodes[k].set_displacement(disp[0], disp[1], disp[2]);
     }
 }
 
-void Frame::compute_reaction() {
+void Frame::compute_reaction(std::string filename) {
     std::ofstream outfile;
-    outfile.open("tmp/plotdata.json");
+    outfile.open(filename);
 
     json jsn;
     jsn["element"] = json::array();
@@ -222,8 +220,7 @@ void FrameUtil::read_material_info(std::ifstream &infile, Frame& frame) {
         ss.str(line);
         ss >> id >> A >> E >> I;
 
-        Material material(id, A, E, I);
-        frame.get_materials().push_back(material);
+        frame.get_materials().push_back(Material(id, A, E, I));
     }
 }
 
@@ -232,7 +229,7 @@ void FrameUtil::read_node_info(std::ifstream &infile, Frame& frame) {
     std::regex comment("^//.*");
     int id;
     double x, y;
-    bool f1, f2, f3;
+    bool fx, fy, fr;
 
     while (getline(infile, line)) {
         static int index = 0;
@@ -244,12 +241,8 @@ void FrameUtil::read_node_info(std::ifstream &infile, Frame& frame) {
 
         std::stringstream ss;
         ss.str(line);
-        ss >> id >> x >> y >> f1 >> f2 >> f3;
-
-        Node nde = Node(index, id, x, y, f1, f2, f3);
-        frame.get_nodes().push_back(nde);
-
-        index++;
+        ss >> id >> x >> y >> fx >> fy >> fr;
+        frame.get_nodes().push_back(Node(index++, id, x, y, fx, fy, fr));
     }
 }
 
@@ -267,9 +260,7 @@ void FrameUtil::read_element_info(std::ifstream &infile, Frame& frame) {
         std::stringstream ss;
         ss.str(line);
         ss >> id >> node1_id >> node2_id >> material_id;
-
-        Element elm(id, find_node(node1_id, frame), find_node(node2_id, frame), find_material(material_id, frame));
-        frame.get_elements().push_back(elm);
+        frame.get_elements().push_back(Element(id, find_node(node1_id, frame), find_node(node2_id, frame), find_material(material_id, frame)));
     }
 }
 
@@ -288,10 +279,8 @@ void FrameUtil::read_nodeload_info(std::ifstream &infile, Frame& frame) {
         std::stringstream ss;
         ss.str(line);
         ss >> id >> object_id >> px >> py >> pr;
-
         NodeLoad ndld(id, px, py, pr);
-        Node &nde = find_node(object_id, frame);
-        nde.add_load(ndld);
+        find_node(object_id, frame).add_load(ndld);
     }
 }
 
@@ -310,16 +299,14 @@ void FrameUtil::read_elementload_info(std::ifstream &infile, Frame& frame) {
         std::stringstream ss;
         ss.str(line);
         ss >> id >> object_id >> loadtype >> magnitude >> a >> b;
-
         ElementLoad emld(id, loadtype, magnitude, a, b);
-        Element &elm = find_element(object_id, frame);
-        elm.add_load(emld);
+        find_element(object_id, frame).add_load(emld);
     }
 }
 
-Frame FrameUtil::construct(std::string inputfile) {
+Frame FrameUtil::construct(std::string filename) {
     std::ifstream infile;
-    infile.open(inputfile);
+    infile.open(filename);
     std::string line;
     Frame frame;
 

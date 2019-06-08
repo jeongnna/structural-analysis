@@ -25,6 +25,7 @@ int main() {
     jsn["vec"] = vec;
 
     outfile << std::setw(4) << jsn << std::endl;
+    outfile.close();
 
     return 0;
 }

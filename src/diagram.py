@@ -86,7 +86,6 @@ class FrameDiagram:
             self.compute_element_bmd(elm_jsn)
             self.adjust_element_diagram(elm_jsn, scale)
 
-            # plot
             sfd_plot.plot(self.diagram['element'][0, :], self.diagram['element'][1, :], 'b-')
             sfd_plot.plot(self.diagram['sfd'][0, :], self.diagram['sfd'][1, :], 'r--')
             bmd_plot.plot(self.diagram['element'][0, :], self.diagram['element'][1, :], 'b-')

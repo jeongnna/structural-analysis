@@ -33,8 +33,14 @@ int main() {
     frame.compute_reaction("outputs/" + input_frame + "/reaction.json");
 
     // draw structure diagram (running python script)
+    double sfd_scale, bmd_scale;
+    std::cout << "sfd scale: ";
+    std::cin >> sfd_scale;
+    std::cout << "bmd scale: ";
+    std::cin >> bmd_scale;
     std::ostringstream ss;
-    ss << "python src/diagram.py " << "outputs/" << input_frame;
+    ss << "python src/diagram.py " << "outputs/" << input_frame <<
+        " " << sfd_scale << " " << bmd_scale;
     system_call(ss.str());
 
     return 0;

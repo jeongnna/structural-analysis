@@ -98,7 +98,7 @@ class FrameDiagram:
 
 def main():
     fd = FrameDiagram(dir=sys.argv[1])
-    fd.draw_diagram(scale=(5.0, 0.5))
+    fd.draw_diagram(scale=(float(sys.argv[2]), float(sys.argv[3])))
 
 
 main()

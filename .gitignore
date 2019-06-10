@@ -37,4 +37,5 @@
 TODO
 tmp/*
 outputs/*
+main
 test/test_any.cpp

@@ -34,10 +34,7 @@ int main() {
 
     // draw structure diagram (running python script)
     std::ostringstream ss;
-    ss << "python src/diagram.py " <<
-        "outputs/" << input_frame << "/reaction.json " <<
-        "outputs/" << input_frame << "/diagramdata.txt " <<
-        "outputs/" << input_frame << "/diagram.png";
+    ss << "python src/diagram.py " << "outputs/" << input_frame;
     system_call(ss.str());
 
     return 0;

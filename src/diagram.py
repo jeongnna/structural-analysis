@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 
 class FrameDiagram:
 
-    def __init__(self, indatafile, outdatafile, outfigfile):
-        with open(indatafile, 'r') as infile:
-            self.indata = json.load(infile)
-        self.outdatafile = outdatafile
-        self.outfigfile = outfigfile
+    def __init__(self, dir):
+        with open(dir + '/reaction.json', 'r') as infile:
+            self.data = json.load(infile)
+        self.sfd_path = dir + '/sfd.png'
+        self.bmd_path = dir + '/bmd.png'
         self.diagram = {}
 
 
@@ -33,18 +33,16 @@ class FrameDiagram:
         self.diagram['element'] = rot.T.dot(self.diagram['element'])
 
 
-    def set_element_sfd(self, element_json):
+    def compute_element_sfd(self, element_json):
         self.diagram['sfd'] = self.diagram['element'].copy()
         self.diagram['sfd'][1, :] -= self.diagram['element'][1, 0]
         self.diagram['sfd'][1, :] += element_json['reaction'][1]
-        self.diagram['sfd'][1, -1] += element_json['reaction'][4]
 
 
-    def set_element_bmd(self, element_json):
+    def compute_element_bmd(self, element_json):
         self.diagram['bmd'] = self.diagram['element'].copy()
         self.diagram['bmd'][1, :] -= self.diagram['element'][1, 0]
         self.diagram['bmd'][1, :] += element_json['reaction'][2]
-        self.diagram['bmd'][1, -1] += element_json['reaction'][5]
 
         sfd_x = self.diagram['sfd'][0, :]
         sfd_y = self.diagram['sfd'][1, :]
@@ -54,54 +52,53 @@ class FrameDiagram:
             self.diagram['bmd'][1, ix:] -= fx * dx
 
 
-    def draw_diagram(self):
-        outdata = open(self.outdatafile, 'w')
+    def adjust_element_diagram(self, element_json, scale):
+        # adjust scale
+        self.diagram['sfd'][1, :] *= scale[0]
+        self.diagram['bmd'][1, :] *= scale[1]
 
-        fig, (sfd, bmd) = plt.subplots(1, 2)
+        # put sfd & bmd on the element
+        self.diagram['sfd'][1, :] += self.diagram['element'][1, 0]
+        self.diagram['bmd'][1, :] += self.diagram['element'][1, 0]
 
-        for ix, elm_jsn in enumerate(self.indata['element']):
+        # convert to global coordinate system
+        rot = self.rotation_matrix(element_json)
+        self.diagram['element'] = rot.dot(self.diagram['element'])
+        self.diagram['sfd'] = rot.dot(self.diagram['sfd'])
+        self.diagram['bmd'] = rot.dot(self.diagram['bmd'])
+
+        # connect endpoint of sfd & bmd with element
+        left = self.diagram['element'][:, 0].reshape(2, 1)
+        right = self.diagram['element'][:, -1].reshape(2, 1)
+        self.diagram['sfd'] = np.concatenate((left, self.diagram['sfd'], right), axis=1)
+        self.diagram['bmd'] = np.concatenate((left, self.diagram['bmd'], right), axis=1)
+
+
+    def draw_diagram(self, scale=(1.0, 1.0)):
+        sfd_fig = plt.figure(0)
+        bmd_fig = plt.figure(1)
+        sfd_plot = sfd_fig.add_subplot(1, 1, 1, aspect = 'equal')
+        bmd_plot = bmd_fig.add_subplot(1, 1, 1, aspect = 'equal')
+
+        for ix, elm_jsn in enumerate(self.data['element']):
             self.set_element_coord(elm_jsn)
-            self.set_element_sfd(elm_jsn)
-            self.set_element_bmd(elm_jsn)
+            self.compute_element_sfd(elm_jsn)
+            self.compute_element_bmd(elm_jsn)
+            self.adjust_element_diagram(elm_jsn, scale)
 
-            outdata.write('<Element %d>' % (ix + 1))
-            outdata.write('\nx: ')
-            outdata.write(np.array_str(self.diagram['element'][0, :]))
-            outdata.write('\nsfd: ')
-            outdata.write(np.array_str(self.diagram['sfd'][1, :]))
-            outdata.write('\nbmd: ')
-            outdata.write(np.array_str(self.diagram['bmd'][1, :]))
-            outdata.write('\n\n')
-
-            self.diagram['sfd'][1, :] += self.diagram['element'][1, 0]
-            self.diagram['bmd'][1, :] += self.diagram['element'][1, 0]
-
-            # convert to global coordinate system
-            rot = self.rotation_matrix(elm_jsn)
-            self.diagram['element'] = rot.dot(self.diagram['element'])
-            self.diagram['sfd'] = rot.dot(self.diagram['sfd'])
-            self.diagram['bmd'] = rot.dot(self.diagram['bmd'])
-            # if not ix == 2:
-            #     continue
             # plot
-            sfd.plot(self.diagram['element'][0, :], self.diagram['element'][1, :], 'b-')
-            sfd.plot(self.diagram['sfd'][0, :], self.diagram['sfd'][1, :], 'r-')
-            bmd.plot(self.diagram['element'][0, :], self.diagram['element'][1, :], 'b-')
-            bmd.plot(self.diagram['bmd'][0, :], self.diagram['bmd'][1, :], 'r-')
-            # if ix == 0:
-            #     break
+            sfd_plot.plot(self.diagram['element'][0, :], self.diagram['element'][1, :], 'b-')
+            sfd_plot.plot(self.diagram['sfd'][0, :], self.diagram['sfd'][1, :], 'r--')
+            bmd_plot.plot(self.diagram['element'][0, :], self.diagram['element'][1, :], 'b-')
+            bmd_plot.plot(self.diagram['bmd'][0, :], self.diagram['bmd'][1, :], 'r--')
 
-        plt.savefig(self.outfigfile)
-        outdata.close()
+        sfd_fig.savefig(self.sfd_path)
+        bmd_fig.savefig(self.bmd_path)
 
 
 def main():
-    sd = FrameDiagram(
-        indatafile=sys.argv[1],
-        outdatafile=sys.argv[2],
-        outfigfile=sys.argv[3]
-    )
-    sd.draw_diagram()
+    fd = FrameDiagram(dir=sys.argv[1])
+    fd.draw_diagram(scale=(5.0, 0.5))
 
 
 main()

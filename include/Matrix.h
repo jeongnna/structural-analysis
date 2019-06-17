@@ -21,9 +21,10 @@ public:
     int& get_col_size();
     std::vector<std::vector<double> >& get_data();
 
-    void print(std::string sep=" ");
+    Matrix copy();
+    Matrix print(std::string sep=" ");
     std::string to_string(std::string sep=" ");
-    void to_csv(std::string filename, std::string sep=" ");
+    Matrix to_csv(std::string filename, std::string sep=",");
 
     std::vector<double> to_1dvector();
 

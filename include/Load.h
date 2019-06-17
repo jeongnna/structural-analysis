@@ -1,6 +1,8 @@
 #ifndef __LOAD_H_
 #define __LOAD_H_
 
+#include "Matrix.h"
+
 
 class NodeLoad {
 private:
@@ -35,6 +37,8 @@ public:
     double& get_magnitude();
     double& get_a();
     double& get_b();
+
+    Matrix fixed_end_moment();
 };
 
 

@@ -50,13 +50,19 @@ int& Matrix::get_col_size() {return m_col_size;}
 std::vector<std::vector<double> >& Matrix::get_data() {return m_data;}
 
 
+// self-copy
+Matrix Matrix::copy() {
+    return Matrix(m_data);
+}
+
 // Print elements
-void Matrix::print(std::string sep) {
+Matrix Matrix::print(std::string sep) {
     for (int i = 0; i < m_row_size; i++) {
         for (int j = 0; j < m_col_size; j++)
             std::cout << m_data[i][j] << sep;
         std::cout << std::endl;
     }
+    return copy();
 }
 
 // Convert to string
@@ -71,7 +77,7 @@ std::string Matrix::to_string(std::string sep) {
 }
 
 // Save matrix to CSV file
-void Matrix::to_csv(std::string filename, std::string sep) {
+Matrix Matrix::to_csv(std::string filename, std::string sep) {
     std::ofstream outfile;
     outfile.open(filename);
     for (int i = 0; i < m_row_size; i++) {
@@ -79,6 +85,7 @@ void Matrix::to_csv(std::string filename, std::string sep) {
             outfile << m_data[i][j] << sep;
         outfile << std::endl;
     }
+    return copy();
 }
 
 

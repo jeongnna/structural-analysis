@@ -16,21 +16,20 @@ private:
     std::vector<Material> m_materials;
     std::vector<Node> m_nodes;
     std::vector<Element> m_elements;
+    std::string m_name;
 
 public:
-    Frame();
+    Frame(std::string name);
 
     std::vector<Material>& get_materials();
     std::vector<Node>& get_nodes();
     std::vector<Element>& get_elements();
 
-    void print();
-
     Matrix stiffness_matrix();
     Matrix nodal_load_vector();
     Matrix fixed_end_moment();
     void compute_displacement();
-    void compute_reaction(std::string filename);
+    void compute_reaction();
 };
 
 
@@ -44,7 +43,7 @@ namespace FrameUtil {
     void read_element_info(std::ifstream &infile, Frame& frame);
     void read_nodeload_info(std::ifstream &infile, Frame& frame);
     void read_elementload_info(std::ifstream &infile, Frame& frame);
-    Frame construct(std::string inputfile);
+    Frame construct(std::string frame_name);
 }
 
 

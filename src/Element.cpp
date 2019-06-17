@@ -1,11 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include "../lib/json.hpp"
 #include "Matrix.h"
 #include "Material.h"
 #include "Load.h"
 #include "Node.h"
 #include "Element.h"
+
+using json = nlohmann::json;
 
 
 Element::Element(int id, Node &node1, Node &node2, Material &material)
@@ -31,21 +34,6 @@ double& Element::get_length() {return m_length;}
 double& Element::get_lx() {return m_lx;}
 double& Element::get_ly() {return m_ly;}
 std::vector<ElementLoad>& Element::get_loads() {return m_loads;}
-
-void Element::print() {
-    std::cout << "{" << std::endl;
-    std::cout << "    Element ID: " << m_id << std::endl;
-    std::cout << "    Nodes: [" << m_node1.get_id() << ", " << m_node2.get_id() << "]" << std::endl;
-    std::cout << "    Material: " << m_material.get_id() << std::endl;
-    std::cout << "    Loads: [";
-    for (int l = 0; l < m_loads.size(); l++) {
-        std::cout << m_loads[l].get_id();
-        if (l < m_loads.size() - 1)
-            std::cout << ", ";
-    }
-    std::cout << "]" << std::endl;
-    std::cout << "}" << std::endl;
-}
 
 void Element::add_load(ElementLoad &load) {
     m_loads.push_back(load);
@@ -93,9 +81,11 @@ Matrix Element::global_stiffness_matrix() {
 }
 
 Matrix Element::local_fixed_end_moment() {
-    Matrix fem(6, 1, 0);
-    // m_loads 에 저장된 ElementLoad 정보로부터
-    // fem (6 x 1 Matrix) 를 만들어야 함.
+    Matrix fem(6, 1, 0.0);
+    for (int l = 0; l < m_loads.size(); l++) {
+        Matrix tmp = m_loads[l].fixed_end_moment();
+        fem += tmp;
+    }
     return fem;
 }
 
@@ -108,7 +98,7 @@ Matrix Element::global_fixed_end_moment() {
 Matrix Element::reaction() {
     std::vector<double> &node1_disp = m_node1.get_displacement();
     std::vector<double> &node2_disp = m_node2.get_displacement();
-    Matrix disp(6, 1, 0);
+    Matrix disp(6, 1, 0.0);
     for (int i = 0; i < 3; i++) {
         disp[0 + i][0] = node1_disp[i];
         disp[3 + i][0] = node2_disp[i];
@@ -118,4 +108,27 @@ Matrix Element::reaction() {
     Matrix rot_t = rotation_matrix().transpose();
     Matrix fem = local_fixed_end_moment();
     return kmat.dot(rot_t).dot(disp) + fem;
+}
+
+
+json Element::json_object() {
+    json jsn;
+    jsn["node1_x"] = m_node1.get_x();
+    jsn["node1_y"] = m_node1.get_y();
+    jsn["node2_x"] = m_node2.get_x();
+    jsn["node2_y"] = m_node2.get_y();
+    jsn["reaction"] = reaction().to_1dvector();
+
+    jsn["load"] = json::array();
+    for (int l = 0; l < m_loads.size(); l++) {
+        ElementLoad &emld = m_loads[l];
+        json load_jsn;
+        load_jsn["loadtype"] = emld.get_loadtype();
+        load_jsn["magnitude"] = emld.get_magnitude();
+        load_jsn["a"] = emld.get_a();
+        load_jsn["b"] = emld.get_b();
+        jsn["load"].push_back(load_jsn);
+    }
+
+    return jsn;
 }

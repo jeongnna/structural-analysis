@@ -26,11 +26,11 @@ int main() {
     // get input file and build the frame
     std::string input_frame = get_input_frame();
     system_call("mkdir outputs/" + input_frame);
-    Frame frame = FrameUtil::construct("data/" + input_frame + ".txt");
+    Frame frame = FrameUtil::construct(input_frame);
 
     // compute
     frame.compute_displacement();
-    frame.compute_reaction("outputs/" + input_frame + "/reaction.json");
+    frame.compute_reaction();
 
     // draw structure diagram (running python script)
     double sfd_scale, bmd_scale;

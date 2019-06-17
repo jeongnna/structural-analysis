@@ -2,10 +2,13 @@
 #define __ELEMENT_H_
 
 #include <vector>
+#include "../lib/json.hpp"
 #include "Matrix.h"
 #include "Material.h"
 #include "Load.h"
 #include "Node.h"
+
+using json = nlohmann::json;
 
 
 class Element {
@@ -31,8 +34,6 @@ public:
     double& get_ly();
     std::vector<ElementLoad>& get_loads();
 
-    void print();
-
     void add_load(ElementLoad &load);
 
     Matrix rotation_matrix();
@@ -41,6 +42,8 @@ public:
     Matrix local_fixed_end_moment();
     Matrix global_fixed_end_moment();
     Matrix reaction();
+
+    json json_object();
 };
 
 

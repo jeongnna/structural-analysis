@@ -1,4 +1,5 @@
 import sys
+import math
 import json
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,11 +7,12 @@ import matplotlib.pyplot as plt
 
 class FrameDiagram:
 
-    def __init__(self, dir):
+    def __init__(self, dir, n_grid):
         with open(dir + '/reaction.json', 'r') as infile:
             self.data = json.load(infile)
         self.sfd_path = dir + '/sfd.png'
         self.bmd_path = dir + '/bmd.png'
+        self.n_grid = n_grid
         self.diagram = {}
 
 
@@ -38,6 +40,17 @@ class FrameDiagram:
         self.diagram['sfd'][1, :] -= self.diagram['element'][1, 0]
         self.diagram['sfd'][1, :] += element_json['reaction'][1]
 
+        loads = element_json['load']
+        for load in loads:
+            if load['loadtype'] == 0:
+                pos = math.floor(self.n_grid * load['a'] / (load['a'] + load['b']))
+                self.diagram['sfd'][1, pos:] -= load['magnitude']
+            elif load['loadtype'] == 2:
+                pos = math.floor(self.n_grid * load['a'] / (load['a'] + load['b']))
+                force = load['magnitude'] * load['a']
+                self.diagram['sfd'][1, :pos] -= np.linspace(0, force, num=pos)
+                self.diagram['sfd'][1, pos:] -= force
+
 
     def compute_element_bmd(self, element_json):
         self.diagram['bmd'] = self.diagram['element'].copy()
@@ -50,6 +63,12 @@ class FrameDiagram:
             dx = sfd_x[ix] - sfd_x[ix - 1]
             fx = sfd_y[ix]
             self.diagram['bmd'][1, ix:] -= fx * dx
+
+        loads = element_json['load']
+        for load in loads:
+            if load['loadtype'] == 1:
+                pos = math.floor(self.n_grid * load['a'] / (load['a'] + load['b']))
+                self.diagram['bmd'][1, pos:] += load['magnitude']
 
 
     def adjust_element_diagram(self, element_json, scale):
@@ -96,7 +115,7 @@ class FrameDiagram:
 
 
 def main():
-    fd = FrameDiagram(dir=sys.argv[1])
+    fd = FrameDiagram(dir=sys.argv[1], n_grid=100)
     fd.draw_diagram(scale=(float(sys.argv[2]), float(sys.argv[3])))
 
 

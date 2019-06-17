@@ -16,7 +16,9 @@
 using json = nlohmann::json;
 
 
-Frame::Frame() {
+Frame::Frame(std::string name)
+: m_name(name)
+{
     // empty
 }
 
@@ -24,26 +26,6 @@ Frame::Frame() {
 std::vector<Material>& Frame::get_materials() {return m_materials;}
 std::vector<Node>& Frame::get_nodes() {return m_nodes;}
 std::vector<Element>& Frame::get_elements() {return m_elements;}
-
-
-void Frame::print() {
-    std::cout << "# Frame information" << std::endl;
-    std::cout << std::endl;
-
-    // print node information
-    std::cout << "@Node" << std::endl;
-    std::cout << "Number of nodes: " << m_nodes.size() << std::endl;
-    for (int k = 0; k < m_nodes.size(); k++)
-        m_nodes[k].print();
-    std::cout << std::endl;
-
-    // print element information
-    std::cout << "@Element" << std::endl;
-    std::cout << "Number of elements: " << m_elements.size() << std::endl;
-    for (int k = 0; k < m_elements.size(); k++)
-        m_elements[k].print();
-    std::cout << std::endl;
-}
 
 
 Matrix Frame::stiffness_matrix() {
@@ -118,9 +100,9 @@ void Frame::compute_displacement() {
             free_idx.push_back(3 * k + 2);
     }
 
-    Matrix kmat = stiffness_matrix().get(free_idx, free_idx);
-    Matrix loadvec = nodal_load_vector().get(free_idx, 0);
-    Matrix fem = fixed_end_moment().get(free_idx, 0);
+    Matrix kmat = stiffness_matrix().to_csv("outputs/" + m_name + "/stiffness_matrix.csv").get(free_idx, free_idx);
+    Matrix loadvec = nodal_load_vector().to_csv("outputs/" + m_name + "/nodal_load_vector.csv").get(free_idx, 0);
+    Matrix fem = fixed_end_moment().to_csv("outputs/" + m_name + "/fixed_end_moment.csv").get(free_idx, 0);
     Matrix disp_tmp = LinearSolver::solve(kmat, loadvec - fem);
 
     std::vector<double> disp;
@@ -138,35 +120,16 @@ void Frame::compute_displacement() {
     }
 }
 
-void Frame::compute_reaction(std::string filename) {
+void Frame::compute_reaction() {
     std::ofstream outfile;
-    outfile.open(filename);
+    outfile.open("outputs/" + m_name + "/reaction.json");
 
     json jsn;
     jsn["element"] = json::array();
 
     for (int k = 0; k < m_elements.size(); k++) {
-        Element &elm = m_elements[k];
-        json elm_jsn;
-        elm_jsn["node1_x"] = elm.get_node1().get_x();
-        elm_jsn["node1_y"] = elm.get_node1().get_y();
-        elm_jsn["node2_x"] = elm.get_node2().get_x();
-        elm_jsn["node2_y"] = elm.get_node2().get_y();
-        elm_jsn["reaction"] = elm.reaction().to_1dvector();
-
-        elm_jsn["load"] = json::array();
-        std::vector<ElementLoad> &loads = elm.get_loads();
-        for (int l = 0; l < loads.size(); l++) {
-            ElementLoad &emld = loads[l];
-            json load_jsn;
-            load_jsn["loadtype"] = emld.get_loadtype();
-            load_jsn["magnitude"] = emld.get_magnitude();
-            load_jsn["a"] = emld.get_a();
-            load_jsn["b"] = emld.get_b();
-            elm_jsn["load"].push_back(load_jsn);
-        }
-
-        jsn["element"].push_back(elm_jsn);
+        //json elm_jsn = m_elements[k].json_object();
+        jsn["element"].push_back(m_elements[k].json_object());
     }
 
     outfile << std::setw(4) << jsn << std::endl;
@@ -304,11 +267,11 @@ void FrameUtil::read_elementload_info(std::ifstream &infile, Frame& frame) {
     }
 }
 
-Frame FrameUtil::construct(std::string filename) {
+Frame FrameUtil::construct(std::string frame_name) {
     std::ifstream infile;
-    infile.open(filename);
+    infile.open("data/" + frame_name + ".txt");
     std::string line;
-    Frame frame;
+    Frame frame(frame_name);
 
     while (getline(infile, line)) {
         if (line == "@Material")

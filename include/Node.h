@@ -24,8 +24,6 @@ public:
     std::vector<NodeLoad>& get_loads();
     std::vector<double>& get_displacement();
 
-    void print();
-
     void add_load(NodeLoad &load);
     void set_displacement(double dx, double dy, double dr);
 };

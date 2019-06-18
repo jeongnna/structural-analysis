@@ -19,29 +19,6 @@ std::vector<bool>& Node::get_fixed() {return m_fixed;}
 std::vector<NodeLoad>& Node::get_loads() {return m_loads;}
 std::vector<double>& Node::get_displacement() {return m_displacement;}
 
-void Node::print() {
-    std::cout << "{" << std::endl;
-    std::cout << "    Node ID: " << m_id << std::endl;
-    std::cout << "    Coordinates: [" << m_x << ", " << m_y << "]" << std::endl;
-    std::cout << "    Fixed: [" << m_fixed[0] << ", " << m_fixed[1] << ", " << m_fixed[2] << "]" << std::endl;
-    std::cout << "    Loads: [";
-    for (int l = 0; l < m_loads.size(); l++) {
-        std::cout << m_loads[l].get_id();
-        if (l < m_loads.size() - 1)
-            std::cout << ", ";
-    }
-    std::cout << "]" << std::endl;
-
-    std::cout << "    Displacement: [";
-    for (int l = 0; l < 3; l++) {
-        std::cout << m_displacement[l];
-        if (l < 2)
-            std::cout << ", ";
-    }
-    std::cout << "]" << std::endl;
-    std::cout << "}" << std::endl;
-}
-
 void Node::add_load(NodeLoad &load) {
     m_loads.push_back(load);
 }

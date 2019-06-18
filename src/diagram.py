@@ -99,7 +99,7 @@ class FrameDiagram:
         sfd_plot = sfd_fig.add_subplot(1, 1, 1, aspect = 'equal')
         bmd_plot = bmd_fig.add_subplot(1, 1, 1, aspect = 'equal')
 
-        for ix, elm_jsn in enumerate(self.data['element']):
+        for elm_jsn in self.data['element']:
             self.set_element_coord(elm_jsn)
             self.compute_element_sfd(elm_jsn)
             self.compute_element_bmd(elm_jsn)

@@ -12,10 +12,10 @@
 
 @Element
 // id  first_node  second_node  material
-    1           1            2         1
-    2           2            3         1
-    3           3            4         1
-    4           4            5         1
+    1           2            1         1
+    2           3            2         1
+    3           4            3         1
+    4           5            4         1
 
 @NodeLoad
 // id  object     px     py     pr
@@ -25,5 +25,5 @@
 // id  object  loadtype  magnitude      a      b
     1       1         1        -50      5      5
     2       2         1         30  3.536  3.536
-    3       4         2          5     10      0
-    4       4         0         10    2.5    7.5
+    3       4         2         -5     10      0
+    4       4         0        -10    7.5    2.5

@@ -1,5 +1,5 @@
 #!/bin/sh
-c++ -std=c++14 \
+c++ -std=c++11 \
 -I include \
 src/main.cpp \
 src/Matrix.cpp \

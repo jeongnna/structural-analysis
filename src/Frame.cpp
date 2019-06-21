@@ -29,8 +29,7 @@ std::vector<Element>& Frame::get_elements() {return m_elements;}
 
 
 Matrix Frame::stiffness_matrix() {
-    int mat_size = 3 * m_nodes.size();
-    Matrix kmat_frame(mat_size, mat_size, 0.0);
+    Matrix kmat_frame(3 * m_nodes.size(), 3 * m_nodes.size(), 0.0);
 
     for (int k = 0; k < m_elements.size(); k++) {
         Element &elm = m_elements[k];
@@ -91,7 +90,6 @@ void Frame::compute_displacement() {
     std::vector<int> free_idx;
     for (int k = 0; k < m_nodes.size(); k++) {
         std::vector<bool> fixed = m_nodes[k].get_fixed();
-
         if (!fixed[0])  // x
             free_idx.push_back(3 * k);
         if (!fixed[1])  // y
@@ -123,15 +121,11 @@ void Frame::compute_displacement() {
 void Frame::compute_reaction() {
     std::ofstream outfile;
     outfile.open("outputs/" + m_name + "/reaction.json");
-
     json jsn;
     jsn["element"] = json::array();
-
     for (int k = 0; k < m_elements.size(); k++) {
-        //json elm_jsn = m_elements[k].json_object();
         jsn["element"].push_back(m_elements[k].json_object());
     }
-
     outfile << std::setw(4) << jsn << std::endl;
 }
 

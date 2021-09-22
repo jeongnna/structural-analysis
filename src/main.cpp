@@ -3,7 +3,10 @@
 #include <sstream>
 #include <string>
 #include <regex>
+#include <filesystem>
 #include "structure.h"
+
+namespace fs = std::__fs::filesystem;
 
 
 std::string get_input_frame() {
@@ -25,7 +28,8 @@ void system_call(std::string command) {
 int main() {
     // get input file and build the frame
     std::string input_frame = get_input_frame();
-    system_call("mkdir outputs/" + input_frame);
+    fs::create_directory("outputs");
+    fs::create_directory("outputs/" + input_frame);
     Frame frame = FrameUtil::construct(input_frame);
 
     // compute
